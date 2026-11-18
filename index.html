@@ -702,7 +702,7 @@
                 weight: 1, 
                 fill: true,
                 fillOpacity: 1,
-                fillColor: 'rgba(212,223,177,1.0)',
+                fillColor: 'rgba(147,255,150,1.0)',
                 interactive: true,
             }
         }
@@ -955,7 +955,7 @@
         }
         function pop_Geologicallandmark_5(feature, layer) {
             var d = feature.properties || {};
-            var buttons = atlasLink(d['Google Earth'], 'Google Earth') + atlasLink(d.WIKIPEDIA, 'Wikipedia');
+            var buttons = atlasLink(d.WIKIPEDIA, d.LINK_LABEL || 'Wikipedia');
             var verification = atlasLink(d.VERIFIED_BY, 'Scientific reference');
             var content = '<article class="atlas-popup">' +
                 '<div class="atlas-popup-kicker">SOUTH AFRICA ATLAS OF GEOLOGICAL SITES · SITE ' + atlasEscape(d.SITE_NO) + '</div>' +
