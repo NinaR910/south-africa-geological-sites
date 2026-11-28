@@ -29,7 +29,15 @@
 .atlas-brand {min-width:0;} .atlas-brand > div {min-width:0;} .atlas-brand small {overflow:hidden; text-overflow:ellipsis; white-space:nowrap;} .atlas-actions {flex-shrink:0;}
 @media(max-width:600px){#atlas-modal {padding:10px;} #atlas-modal .atlas-modal {max-height:94vh;} .atlas-brand strong {font-size:12px;}}
 </style>
-    </head>
+    <style>
+.atlas-photo {margin:0 0 14px;}
+.atlas-photo img {display:block;width:100%;height:auto;max-height:260px;object-fit:contain;background:#f2f4ef;border-radius:8px;}
+.atlas-photo figcaption {font-size:12px;line-height:1.45;color:#33423c;margin-top:7px;}
+.atlas-photo-credit {display:block;font-size:11px;color:#526f60;margin-top:4px;}
+.atlas-photo a {display:block;}
+.atlas-photo-hint {font-size:11px;color:#276d5c;}
+</style>
+</head>
     <body>
         <header class="atlas-header"><div class="atlas-brand"><span class="atlas-mark">◈</span><div><strong>The South Africa Atlas of Geological Sites</strong><small>Exploring South Africa's remarkable geological heritage through interactive cartography.</small></div></div><div class="atlas-actions"><button id="atlas-home" type="button" title="Reset map to South Africa">⌖ <span>Full extent</span></button><button id="atlas-about" type="button">About &amp; sources</button><button id="atlas-menu" type="button" aria-label="Show site explorer" aria-expanded="false">☰ Explore</button></div></header>
         <main class="atlas-layout"><aside id="atlas-sidebar" class="atlas-sidebar" aria-label="Explore geological sites"><div class="atlas-side-head"><div><h2>Explore sites</h2><p>Find landmarks by name or geological category.</p></div><button type="button" id="atlas-close" aria-label="Close site explorer">×</button></div><label class="atlas-field-label" for="atlas-search">Search by site name</label><input id="atlas-search" type="search" placeholder="e.g. Cango Caves" autocomplete="off"/><div class="atlas-filter-head"><strong>Categories</strong><button type="button" id="atlas-all">Select all</button></div><div id="atlas-filters" class="atlas-filters"></div><div class="atlas-results-head"><span id="atlas-count">40 sites</span><button id="atlas-clear" type="button">Clear search</button></div><div id="atlas-results" class="atlas-results"></div><div class="atlas-layers"><strong>Map layers</strong><label><input type="checkbox" data-layer="Road" checked/> Roads</label><label><input type="checkbox" data-layer="Cities" checked/> Cities</label><label><input type="checkbox" data-layer="Province" checked/> Provinces</label><label><input type="checkbox" data-layer="SA" checked/> South Africa boundary</label><label><input type="checkbox" data-layer="Neighbour" checked/> Neighbouring countries</label></div></aside><div class="atlas-map-wrap"><div id="map"></div><div class="atlas-map-note">Select a symbol or search for a site · Scroll to zoom</div></div></main>
@@ -37,7 +45,7 @@
 <p>This interactive atlas has been developed to showcase a selection of South Africa's most fascinating geological sites and places of natural and historical significance. By combining digital cartography, scientific descriptions, and links to additional information, the atlas provides an accessible platform for exploring and understanding the country's geological heritage.</p>
 <p>It is intended as an educational and exploratory resource for students, educators, geologists, nature enthusiasts, and tourists interested in discovering the remarkable diversity of South Africa.</p>
 <p>The selection and description of the sites draw primarily on the published works of G. Whitfield, N. Norman, M. J. Viljoen, and W. U. Reimold, whose contributions to documenting and promoting South Africa's geological heritage have been invaluable.</p>
-<p>The atlas aims not only to enhance public understanding of geology but also to encourage appreciation, exploration, and preservation of this exceptional natural heritage.</p><div class="atlas-welcome-stats"><div><strong id="atlas-welcome-count">40</strong>Selected sites</div><div><strong id="atlas-welcome-categories">13</strong>Site categories</div></div><button id="atlas-enter" type="button">Explore the Atlas</button><details id="atlas-source-details"><summary>Sources &amp; references</summary><h3>References</h3><p><b>W2015</b> — Gavin Whitfield, <i>50 Must-See Geological Sites in South Africa</i> (2015).<br><b>VR1999</b> — M. J. Viljoen and W. U. Reimold, <i>An Introduction to South Africa's Geological and Mining Heritage</i> (1999).<br><b>NW2006</b> — Nick Norman and Gavin Whitfield, <i>Geological Journeys</i> (2006).</p><h3>Map and icon credits</h3><p>Map prepared in QGIS and exported with qgis2web/Leaflet. Category symbols are adapted from the Temaki marker symbols collection. Individual site references are included in the popups.</p><p>Photographs are not included in this edition. Geological ages may refer to host rocks rather than the age of the landform itself.</p></details></section></div>
+<p>The atlas aims not only to enhance public understanding of geology but also to encourage appreciation, exploration, and preservation of this exceptional natural heritage.</p><div class="atlas-welcome-stats"><div><strong id="atlas-welcome-count">40</strong>Selected sites</div><div><strong id="atlas-welcome-categories">13</strong>Site categories</div></div><button id="atlas-enter" type="button">Explore the Atlas</button><details id="atlas-source-details"><summary>Sources &amp; references</summary><h3>References</h3><p><b>W2015</b> — Gavin Whitfield, <i>50 Must-See Geological Sites in South Africa</i> (2015).<br><b>VR1999</b> — M. J. Viljoen and W. U. Reimold, <i>An Introduction to South Africa's Geological and Mining Heritage</i> (1999).<br><b>NW2006</b> — Nick Norman and Gavin Whitfield, <i>Geological Journeys</i> (2006).</p><h3>Map and icon credits</h3><p>Map prepared in QGIS and exported with qgis2web/Leaflet. Category symbols are adapted from the Temaki marker symbols collection. Individual site references are included in the popups.</p><p>Photographs are credited individually in site popups and published with permission or under the stated licence. Copyright remains with the respective photographers. Geological ages may refer to host rocks rather than the age of the landform itself.</p></details></section></div>
         <script src="js/qgis2web_expressions.js"></script>
         <script src="js/leaflet.js"></script>
         <script src="js/L.Control.Layers.Tree.min.js"></script>
@@ -970,6 +978,16 @@
             if (value === null || value === undefined || String(value).trim() === '') return '';
             return '<section class="atlas-popup-section"><h4>' + atlasEscape(label) + '</h4><p>' + atlasEscape(value) + '</p></section>';
         }
+        function atlasPhoto(d) {
+            if (!d.PHOTO || !/^[a-zA-Z0-9_-]+\.(jpg|jpeg|png|webp)$/i.test(d.PHOTO)) return '';
+            var src = 'images/' + encodeURIComponent(d.PHOTO);
+            return '<figure class="atlas-photo"><a href="' + src + '" target="_blank" rel="noopener noreferrer" aria-label="Open enlarged photograph">' +
+                '<img src="' + src + '" alt="' + atlasEscape(d.PHOTO_CAPTION || d.NAME) + '" onerror="this.closest(\'figure\').hidden=true"></a>' +
+                '<span class="atlas-photo-hint">Click photograph to enlarge ↗</span><figcaption>' + atlasEscape(d.PHOTO_CAPTION || '') +
+                '<span class="atlas-photo-credit">' + (d.PHOTO_CREDIT ? 'Photo: ' + atlasEscape(d.PHOTO_CREDIT) : '') +
+                (d.PHOTO_RIGHTS ? ' · ' + atlasEscape(d.PHOTO_RIGHTS) : '') +
+                (d.PHOTO_SOURCE ? ' · ' + atlasLink(d.PHOTO_SOURCE, 'Image source') : '') + '</span></figcaption></figure>';
+        }
         function pop_Geologicallandmark_5(feature, layer) {
             var d = feature.properties || {};
             var buttons = atlasLink(d.WIKIPEDIA, d.LINK_LABEL || 'Wikipedia');
@@ -978,6 +996,7 @@
                 '<div class="atlas-popup-kicker">SOUTH AFRICA ATLAS OF GEOLOGICAL SITES · SITE ' + atlasEscape(d.SITE_NO) + '</div>' +
                 '<h3>' + atlasEscape(d.NAME) + '</h3>' +
                 '<div class="atlas-popup-tags"><span>' + atlasEscape(d.CATEGORY) + '</span><span>' + atlasEscape(d.PROVINCE) + '</span></div>' +
+                atlasPhoto(d) +
                 atlasSection('Geological age', d.GEO_AGE) +
                 atlasSection('About this site', d.DESCRIPTION) +
                 atlasSection('Geology', d.GEOLOGY) +
